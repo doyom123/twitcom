@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/css/site.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="/javascript/tweet_submit.js"></script>
+		<script src="/javascript/vote.js"></script>
+	</head>
+	<body>
+		<header>
+			<title></title>
+			<button id="submit_button">Submit Tweet</button>			
+		</header>
+
+		<!-- Submit Form -->
+		<div id="tweet-submit">
+		<!-- <form action="/tweets/submit" method="POST"> -->
+				<p> Submit info </p>
+				<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
+				<button id="form_submit">Submit</button>
+				<button id="form_cancel">Cancel</button>
+		</div>>
+
+
+		<!-- <script>
+			var tweet_submit = document.getElementById('tweet-submit');
+			var submit_btn = document.getElementById('submit_button');
+			var form_submit_btn = document.getElementById('form_submit');
+			var form_cancel_btn = document.getElementById('form_cancel');
+			
+			submit_btn.onclick = function() {
+				tweet_submit.style.display = "block";
+			}
+
+			form_submit_btn.onclick = function() {
+
+			}
+
+			form_cancel_btn.onclick = function() {
+				tweet_submit.style.display = "none";
+			}
+
+			// window.onclick = function(event) {
+			// 	if(event.target == tweet_submit) {
+			// 		tweet_submit.style.display = "none";
+			// 	}
+			// }
+		</script> -->
+
+
+		<main>
+		<span class="order">
+			<button onclick="window.location.href='/'">Votes</button>
+			<button onclick="window.location.href='/latest'">Latest</button>
+			<button onclick="window.location.href='/random'">Random</button>
+		</span>
+		<% for (var i = 0; i < tweets.length; i++) { %>
+			<%- include('_tweet', { tweet: tweets[i] }) %>
+		<% } -%>
+		</main>
+	</body>	
+
+</html>

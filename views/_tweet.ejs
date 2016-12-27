@@ -1,0 +1,11 @@
+<!-- views/_tweet.ejs -->
+<article class="tweet">
+	<!-- tweet text -->
+	<p>
+		<div class="tweet-body"><%= tweet.rank %> - <%= tweet.body %></div>
+	</p>
+	<p>
+		<span> <%= tweet.vote_count %> </span>
+		<button class="vote_button" name="vote_button" id="<%= tweet.id %>">+</button>
+	</p>
+</article>
