@@ -1,4 +1,4 @@
-# twitcomt
-cronjob runs every hour to update twitter status with higheset rated suggestiont
+# twitcom
+cronjob runs every hour to update twitter status with higheset rated suggestion
 
-nodejs, express, mysql,...t
+nodejs, express, mysql,...
