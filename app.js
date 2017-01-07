@@ -4,20 +4,12 @@
 var mysql = require('mysql');
 var express = require('express');
 var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
 var path = require('path');
 var Oauth = require('oauth').OAuth;
 var Twitter = require('twitter');
 var CronJob = require('cron').CronJob;
-var moment = require('moment-timezone');
 var env = require('dotenv').config();
-var passport = require('passport');
-var session = require('express-session');
-var connectEnsureLogin = require('connect-ensure-login').ensureLoggedIn('/login/twitter');
-var MySQLStore = require('express-mysql-session');
-var Strategy = require('passport-twitter').Strategy;
 var app = express();
-var router = express.Router();
 var connection = mysql.createConnection({
 	host: '127.0.0.1',
 	user: 'vagrant',
@@ -25,52 +17,12 @@ var connection = mysql.createConnection({
 	database: 'twitcom'
 });
 
-var times = {
-};
-var init_times = function() {
-	times.startTime = moment.tz("US/Eastern").minute(0).second(0);
-	times.endTime = times.startTime.clone().minute(59).second(59);
-	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
-	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
-	
-}
-var reset_times = function() {
-	times.startTime.add(1, 'hour');
-	times.endTime = times.startTime.clone().minute(59).second(59);
-	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
-	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
-}
-
-
 var job = new CronJob({
-	cronTime: '0 0 0-23 * * *',
-	onTick: function() {
-		
-		var query = 'SELECT * FROM 	 Tweets WHERE submitted_at >= ? AND submitted_at <= ? ' + 
-							  'ORDER BY vote_count DESC LIMIT 1';
-		
-		console.log("startTime = " + times.startTime.format("YYYY-MM-DD HH:mm:ss"));
-		console.log("endTime = " + times.endTime.format("YYYY-MM-DD HH:mm:ss"));
-		connection.query(query, [times.startTime_format, times.endTime_format], function(err, results) {
-			if(err) {
-				console.log(err);
-			}
-			if(results.length == 0) {
-				return;
-			}
-			var body = results[0].body;
-			twitter.post('statuses/update', {status: body},  function(error, tweet, response){
-			  if(error){
-			    console.log(error);
-			  }
-		  	  console.log(tweet);  // Tweet body.
-		 		 //console.log(response);  // Raw response object.
-			});
-		});
-		
-		reset_times();		
+	cronTime: '00 30 11 * * *',
+	onTicK: function() {
+
 	},
-	start: true,
+	start: false,
 	timeZone: 'US/Eastern'
 });
 
@@ -84,14 +36,14 @@ var twitter = new Twitter({
 connection.connect(function(err) {
 	if(err) {
 		console.log(err);
-		console.log("connect");
 		return;
 	}
 	console.log('Connected to the database');
 	app.listen(8080, function() {
 		console.log('Web Server listening on port 8080');
 	});
-	init_times();
+	job.start();
+	console.log('CronJob started');
 });
 
 app.set('view engine', 'ejs');
@@ -101,9 +53,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', function(req, res) {
-	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
-				'ORDER BY vote_count DESC LIMIT 50';
-	connection.query(query, [times.startTime_format, times.endTime_format], function(err, results) {
+	var query = 'SELECT * FROM Tweets ORDER BY vote_count DESC';
+	connection.query(query, function(err, results) {
 		if(err) {
 			console.log(err);
 			console.log("hi");
@@ -166,114 +117,20 @@ app.post('/vote/:id([0-9]+)', function(req, res) {
 	});
 });
 
+// Test Twitter Update Status
+app.post('/status', function(req, res) {
 
-// Send JSON response to populate tweet list for AJAX request
-app.get('/refresh', function(req, res) {
-	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
-				'ORDER BY vote_count DESC LIMIT 50';
-	connection.query(query, [times.startTime_format, times.endTime_format], function(err, results) {
-		if(err) {
-			console.log(err);
-		}
-		for(var i = 0; i < results.length; i++) {
-			var tweet = results[i];
-			tweet.rank = i + 1;
-		}
-		res.render('_tweet_list', { tweets: results });
+	twitter.post('statuses/update', {status: 'Testing'},  function(error, tweet, response){
+	  if(error){
+	    console.log(error);
+	  }
+	  console.log(tweet);  // Tweet body.
+	  //console.log(response);  // Raw response object.
 	});
-});
-
-// Passport setup
-passport.serializeUser(function(user, done) {
-	done(null, user.id);
-});
-passport.deserializeUser(function(id, done) {
-	var query = "SELECT * FROM Users WHERE twitter_id=?";
-	connection.query(query, [id], function(err, results) {
-		if(err) {
-			console.log(err);
-			throw err;
-		}
-		done(null, results[0]);
-	});
-});
-
-passport.use('twitter', new Strategy({
-		consumerKey 	: env.consumer_key,
-		consumerSecret 	: env.consumer_secret,
-		callbackURL 	: env.callback_url
-	},
-	function(token, tokenSecret, profile, cb) {
-		process.nextTick(function() {
-			var query = "SELECT * FROM Users WHERE twitter_id=?";
-			connection.query(query, [profile.id], function(err, results) {
-				if(err) {
-					console.log(err);
-					throw err;
-				}
-				if(results.length == 0) {
-					var query = "INSERT INTO Users(twitter_id, name, display_name, token) VALUES(?,?,?,?)";
-					var twitter_id = profile.id;
-					var name = profile.username;
-					var display_name = profile.displayname;
-					var token = token;
-					connection.query(query, [twitter_id, name, display_name, token], function(err, results) {
-						console.log("Inserted ID: " + twitter_id + " name: " + name);
-						if(err) throw err;
-						var user = {
-							id: profile.id,
-							username: profile.username,
-							display_name: profile.displayName,
-							token: token,
-							token: tokenSecret
-						}
-						return  cb(null, user);
-					});
-				} else {
-					console.log("User already exists in database");
-				}
-			});
-			return cb(null, profile);
-		});
-	}));
-
-// login routes
-var options = {
-	host: '127.0.0.1',
-	port: 3306,
-	user: 'vagrant',
-	database: 'twitcom'
-}
-var sessionStore = new MySQLStore({}, connection);
-
-app.use(session({
-	key: 'session_cookie_name',
-	secret: 'session_cookie_secret', 
-	store: sessionStore,
-	resave: true, 
-	saveUninitialized: true 
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.get('/login/twitter',
-	passport.authenticate('twitter')
-);
-app.get('/login/twitter/callback',
-	passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/'}),
-	function(req, res) {
-		res.redirect('/');
-	});
-
-app.get('/logout/twitter', function(req, res) {
-	req.logout();
-	console.log('user logged out');
 	res.redirect('/');
 });
 
-	
-app.get('/profile', connectEnsureLogin, function(req, res) {
-		res.render('profile', {});
-	});
+// Cron Job
 
 
 // app.post('/', function(req, res) {
