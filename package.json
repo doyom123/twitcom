@@ -1,27 +1,37 @@
 {
   "name": "twitcom",
   "version": "1.0.0",
-  "description": "",
+  "description": "cronjob runs every hour to update twitter status with higheset rated suggestiont",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url":  "git+https://github.com/doyom123/twitcom.git"
-  },
-  "keywords": {
+    "url": "git+https://github.com/doyom123/twitcom.git"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "connect-ensure-login": "^0.1.1",
+    "cookie-parser": "^1.4.3",
     "dotenv": "^2.0.0",
     "ejs": "^2.5.5",
     "express": "^4.14.0",
+    "express-mysql-session": "^1.2.0",
+    "express-session": "^1.14.2",
+    "express-sessions": "^1.0.6",
     "jquery": "^3.1.1",
+    "moment-timezone": "^0.5.11",
     "mysql": "^2.12.0",
     "nodemon": "^1.11.0",
     "twitter": "^1.7.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/doyom123/twitcom/issues"
+  },
+  "homepage": "https://github.com/doyom123/twitcom#readme",
+  "devDependencies": {},
+  "keywords": []
 }
