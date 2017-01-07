@@ -20,5 +20,20 @@ $(function() {
 		} 
 	});
 
+	$('#refresh').click(function() {
+		var url = "/refresh";
+		$.get(url, function( data ) {
+			$('#tweet_list').html(data);
+		});
+	});
+
+	// timer
+	function showTime() {
+		var now = moment.tz("US/Eastern").format("HH:mm:ss");
+		$('#timer').html(now);
+	}
+
+	var timer = setInterval(showTime, 500);
+
 
 });

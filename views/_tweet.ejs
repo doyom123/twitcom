@@ -5,7 +5,7 @@
 		<div class="tweet-body"><%= tweet.rank %> - <%= tweet.body %></div>
 	</p>
 	<p>
-		<span> <%= tweet.vote_count %> </span>
+		<span> <%= tweet.vote_count %> submitted_at <%= tweet.submitted_at %></span>
 		<button class="vote_button" name="vote_button" id="<%= tweet.id %>">+</button>
 	</p>
 </article>

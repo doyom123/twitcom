@@ -1,0 +1,6 @@
+<!-- views/_tweet_list.ejs -->
+<article class="tweet_list">
+	<% for (var i = 0; i < tweets.length; i++) { %>
+		<%- include('_tweet', { tweet: tweets[i] }) %>
+	<% } -%>
+</article>

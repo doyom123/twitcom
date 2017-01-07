@@ -3,6 +3,8 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="/css/site.css">
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="/javascript/moment.min.js"></script>
+		<script src="/javascript/moment-timezone-with-data-2010-2020.min.js"></script>
 		<script src="/javascript/tweet_submit.js"></script>
 		<script src="/javascript/vote.js"></script>
 	</head>
@@ -50,18 +52,25 @@
 
 
 		<main>
-			<form action="/status" method="POST">
-				<button id="test">TEST BUTTON</button>
-			</form>
+			<!-- TIMER -->
+			<p id="timer"></p>
+
+			<!-- Test button -->
+			<button id="refresh">refresh</button><br>
+			<a href="/login/twitter">Sign in</a><br>
+			<a href="/logout/twitter">Log out</a><br>
+			<a href="/profile">Profile</a><br>
 		<span class="order">
 			<button onclick="window.location.href='/'">Votes</button>
 			<button onclick="window.location.href='/latest'">Latest</button>
 			<button onclick="window.location.href='/random'">Random</button>
 		</span>
-		<% for (var i = 0; i < tweets.length; i++) { %>
-			<%- include('_tweet', { tweet: tweets[i] }) %>
-		<% } -%>
+
+		<div id="tweet_list">
+		 	<%- include('_tweet_list', { tweets: tweets }) %>
+		</div>
 		</main>
 	</body>	
 
 </html>
+
