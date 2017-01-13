@@ -1,5 +1,33 @@
+<!DOCTYPE html>
 <html>
-<body>
-	<p> hi </p>
-</body>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/css/site.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="/javascript/moment.min.js"></script>
+		<script src="/javascript/moment-timezone-with-data-2010-2020.min.js"></script>
+		<script src="/javascript/tweet_submit.js"></script>
+		<script src="/javascript/vote.js"></script>
+	</head>
+	<body>
+		<header>
+			<title></title>
+			<button id="submit_button">Submit Tweet</button>			
+		</header>
+
+		<!-- Submit Form -->
+		<div id="tweet-submit">
+		<!-- <form action="/tweets/submit" method="POST"> -->
+				<p> Submit info </p>
+				<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
+				<button id="form_submit">Submit</button>
+				<button id="form_cancel">Cancel</button>
+		</div>>
+
+		<main>
+			<p> hi </p>
+			<div>user id: <%= user.id %></div>
+			<div>user name: <%= user.created_at %></div>
+
+		</main>		
+	</body>
 </html>

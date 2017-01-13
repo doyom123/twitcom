@@ -55,6 +55,12 @@
 			<!-- TIMER -->
 			<p id="timer"></p>
 
+			<% if(login){ %>
+				<h1>logged in</h1>
+			<% } else{%>
+				<h1>not logged in</h1>
+			<% } %>
+
 			<!-- Test button -->
 			<button id="refresh">refresh</button><br>
 			<a href="/login/twitter">Sign in</a><br>
