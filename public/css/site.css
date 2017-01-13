@@ -3,6 +3,10 @@
 	box-sizing: inherit;
 }
 
+a:link, a:hover, a:visited {
+	text-decoration: none;
+}
+
 header {
 	position: fixed;
 	top: 0;
@@ -13,8 +17,9 @@ header {
 	background-color: #f0f0f0;
 }
 
+
 main {
-	width: 600px;
+	width: 800px;
 	margin: 60px auto 0px auto;
 }
 
@@ -35,16 +40,26 @@ button {
 	word-wrap: break-word;
 }
 
-.order{
+.order {
 	width: auto;
+	float: right;
 }
 
+._header {
+	padding: 15px;
+}
+
+#head-right {
+	float: right;
+}
 
 #tweet-submit {
 	display: none;
 	position: fixed;
 	z-index: 1;
 	background-color: #80B3FF;
+}
+#timer {
 
 }
 

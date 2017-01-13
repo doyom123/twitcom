@@ -10,71 +10,41 @@
 	</head>
 	<body>
 		<header>
-			<title></title>
-			<button id="submit_button">Submit Tweet</button>			
+			<title>TwitCom</title>
+			<%- include('_header', { user: user }) %>			
 		</header>
 
+		<main>
+			<span class="row">
+				<button id="submit_button">submit</button>
 
-		<!-- Submit Form -->
-		<div id="tweet-submit">
-		<!-- <form action="/tweets/submit" method="POST"> -->
+				<span class="order">
+					<button onclick="window.location.href='/'">Votes</button>
+					<button onclick="window.location.href='/latest'">Latest</button>
+					<button onclick="window.location.href='/random'">Random</button>
+				</span>
+			</span>
+
+			<!-- Submit Form -->
+			<div id="tweet-submit">
+			<!-- <form action="/tweets/submit" method="POST"> -->
 				<p> Submit info </p>
 				<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
 				<button id="form_submit">Submit</button>
 				<button id="form_cancel">Cancel</button>
-		</div>>
+			</div>
 
-
-		<!-- <script>
-			var tweet_submit = document.getElementById('tweet-submit');
-			var submit_btn = document.getElementById('submit_button');
-			var form_submit_btn = document.getElementById('form_submit');
-			var form_cancel_btn = document.getElementById('form_cancel');
 			
-			submit_btn.onclick = function() {
-				tweet_submit.style.display = "block";
-			}
-
-			form_submit_btn.onclick = function() {
-
-			}
-
-			form_cancel_btn.onclick = function() {
-				tweet_submit.style.display = "none";
-			}
-
-			// window.onclick = function(event) {
-			// 	if(event.target == tweet_submit) {
-			// 		tweet_submit.style.display = "none";
-			// 	}
-			// }
-		</script> -->
-
-
-		<main>
-			<!-- TIMER -->
-			<p id="timer"></p>
-
-			<% if(login){ %>
-				<h1>logged in</h1>
-			<% } else{%>
-				<h1>not logged in</h1>
-			<% } %>
 
 			<!-- Test button -->
-			<button id="refresh">refresh</button><br>
-			<a href="/login/twitter">Sign in</a><br>
-			<a href="/logout/twitter">Log out</a><br>
-			<a href="/profile">Profile</a><br>
-		<span class="order">
-			<button onclick="window.location.href='/'">Votes</button>
-			<button onclick="window.location.href='/latest'">Latest</button>
-			<button onclick="window.location.href='/random'">Random</button>
-		</span>
-
-		<div id="tweet_list">
-		 	<%- include('_tweet_list', { tweets: tweets }) %>
-		</div>
+			<span>
+				<button id="refresh">refresh</button><br>
+				<!-- TIMER -->
+				<div id="timer"></div>
+			</span>
+			<div id="tweet_list">
+			 	<%- include('_tweet_list', { tweets: tweets }) %>
+			</div>
 		</main>
 	</body>	
 

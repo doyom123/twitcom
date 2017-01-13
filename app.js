@@ -29,13 +29,20 @@ var connection = mysql.createConnection({
 var times = {
 };
 var init_times = function() {
+	times.UTCstartTime = moment().minute(0).second(0);
+	times.UTCendTime = moment().minute(59).second(59);
+	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
+	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
 	times.startTime = moment.tz("US/Eastern").minute(0).second(0);
 	times.endTime = times.startTime.clone().minute(59).second(59);
 	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
 	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
-	
 }
 var reset_times = function() {
+	times.UTCstartTime.add(1, 'hour');
+	times.UTC.endTime = times.UTCstartTime.clone().minute(59).second(59);
+	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
+	times.UTCendTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
 	times.startTime.add(1, 'hour');
 	times.endTime = times.startTime.clone().minute(59).second(59);
 	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
@@ -101,10 +108,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
-
-
 // Passport setup
 app.use(session({
 	key: 'session_cookie_name',
@@ -126,22 +129,24 @@ passport.use(new Strategy({
 	function(token, tokenSecret, profile, cb) {
 		process.nextTick(function() {
 			var query = "SELECT * FROM Users WHERE twitter_id=?";
-			connection.query(query, [profile.id], function(err, results) {
+			connection.query(query, [profile.id_str], function(err, results) {
 				if(err) {
 					console.log(err);
 					throw err;
 				}
 				if(results.length == 0) {
-					var query = "INSERT INTO Users(twitter_id, name, display_name, token) VALUES(?,?,?,?)";
-					var twitter_id = profile.id;
-					var name = profile.username;
-					var display_name = profile.displayname;
+
+					var query = "INSERT INTO Users(twitter_id, name, display_name) VALUES(?,?,?)";
+					var twitter_id = profile._json.id_str;
+					var name = profile._json.screen_name;
+					var display_name = profile._json.name;
 					var token = token;
-					connection.query(query, [twitter_id, name, display_name, token], function(err, results) {
+					console.log(profile._json.id_str);
+					connection.query(query, [twitter_id, name, display_name], function(err, results) {
 						console.log("Inserted ID: " + twitter_id + " name: " + name);
 						if(err) throw err;
 						var user = {
-							id: profile.id,
+							id: profile.id_str,
 							username: profile.username,
 							display_name: profile.displayName,
 							token: token,
@@ -177,7 +182,6 @@ passport.deserializeUser(function(id, done) {
 	connection.query(query, [id], function(err, results) {
 		if(err) {
 			console.log(err);
-			console.log("deserialize error");
 			throw err;
 		}
 		console.log(id);
@@ -213,12 +217,13 @@ app.get('/profile', authUser, function(req, res) {
 app.get('/', authUser, function(req, res) {
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
 				'ORDER BY vote_count DESC LIMIT 50';
-	connection.query(query, [times.startTime_format, times.endTime_format], function(err, results) {
+	var UTCstartTime = 
+	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 		if(err) {
 			console.log(err);
 		}
 		if(req.user) {
-			console.log("USER LOGGED IN");
+			console.log(req.user.profile_image_url);
 		} else {
 			console.log("USER NOT LOGGED IN");
 		}
@@ -246,14 +251,14 @@ app.get('/latest', authUser, function(req, res) {
 		if(req.user) {
 			console.log("LOGGEDIN");
 		}
-		console.log(res.locals.login);
 		res.render('twitcom', { 
-			tweets: results
+			tweets: results,
+			user: req.user
 		});
 	});
 });
 
-app.get('/random', function(req, res) {
+app.get('/random', authUser, function(req, res) {
 	var query = 'SELECT * FROM Tweets ORDER BY RAND() LIMIT 50';
 	connection.query(query, function(err, results) {
 		if(err) {
@@ -263,7 +268,10 @@ app.get('/random', function(req, res) {
 			var tweet = results[i];
 			tweet.rank = i + 1;
 		}
-		res.render('twitcom', { tweets: results });
+		res.render('twitcom', { 
+			tweets: results,
+			user: req.user 
+		});
 	});
 });
 
@@ -289,10 +297,6 @@ app.post('/vote/:id([0-9]+)', function(req, res) {
 	});
 });
 
-app.get('/:name', authUser, function(req, res) {
-	res.redirect('/');
-});
-
 // Send JSON response to populate tweet list for AJAX request
 app.get('/refresh', function(req, res) {
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
@@ -308,10 +312,3 @@ app.get('/refresh', function(req, res) {
 		res.render('_tweet_list', { tweets: results });
 	});
 });
-
-// app.post('/', function(req, res) {
-// 	var query = 'UPDATE Tweets SET vote_count = vote_count + 1 WHERE id = 1';
-// 	connection.query(query, function(err, results) {
-// 		res.redirect('/');
-// 	});
-// });
