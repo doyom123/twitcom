@@ -10,6 +10,7 @@ var authUser = require('./middleware/authUser.js');
 var Oauth = require('oauth').OAuth;
 var Twitter = require('twitter');
 var CronJob = require('cron').CronJob;
+var moment_ = require('moment');
 var moment = require('moment-timezone');
 var env = require('dotenv').config();
 var passport = require('passport');
@@ -105,7 +106,7 @@ connection.connect(function(err) {
 		return;
 	}
 	console.log('Connected to the database');
-	app.listen(8080, function() {
+	app.listen(5000, function() {
 		console.log('Web Server listening on port 8080');
 	});
 	init_times();
@@ -174,12 +175,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // login routes
-var options = {
-	host: 'http://127.0.0.1',
-	port: 3306,
-	user: 'vagrant',
-	database: 'twitcom'
-}
+// var options = {
+// 	host: 'http://127.0.0.1',
+// 	port: 3306,
+// 	user: 'vagrant',
+// 	database: 'twitcom'
+// }
 var sessionStore = new MySQLStore({}, connection);
 
 passport.serializeUser(function(user, done) {

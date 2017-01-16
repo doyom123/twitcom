@@ -7,7 +7,8 @@
     "node": "4.2.6"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "express-session": "^1.14.2",
     "express-sessions": "^1.0.6",
     "jquery": "^3.1.1",
+    "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
     "mysql": "^2.12.0",
     "nodemon": "^1.11.0",
@@ -36,5 +38,9 @@
   },
   "homepage": "https://github.com/doyom123/twitcom#readme",
   "devDependencies": {},
-  "keywords": []
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ]
 }
