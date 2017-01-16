@@ -21,10 +21,10 @@ var Strategy = require('passport-twitter').Strategy;
 var app = express();
 var router = express.Router();
 var connection = mysql.createConnection({
-	host: env.MYSQL_HOST,
-	user: env.MYSQL_USERNAME,
-	password: env.MYSQL_PASSWORD,
-	database: env.DATABASE_NAME
+	host: process.env.MYSQL_HOST,
+	user: process.env.MYSQL_USERNAME,
+	password: process.env.MYSQL_PASSWORD,
+	database: process.env.DATABASE_NAME
 });
 
 var port = process.env.PORT || 8080;
