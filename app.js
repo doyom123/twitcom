@@ -29,37 +29,45 @@ var connection = mysql.createConnection({
 var times = {
 };
 var init_times = function() {
-	times.UTCstartTime = moment().minute(0).second(0);
-	times.UTCendTime = moment().minute(59).second(59);
+	times.UTCstartTime = moment().second(0);
+	times.UTCendTime = moment().second(59);
+	// times.UTCstartTime = moment().minute(0).second(0);
+	// times.UTCendTime = moment().minute(59).second(59);
 	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
 	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
-	times.startTime = moment.tz("US/Eastern").minute(0).second(0);
-	times.endTime = times.startTime.clone().minute(59).second(59);
+	// times.startTime = moment.tz("US/Eastern").minute(0).second(0);
+	// times.endTime = times.startTime.clone().minute(59).second(59);
+	times.startTime = moment.tz("America/New_York").second(0);
+	times.endTime = times.startTime.clone().second(59);
 	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
 	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
 }
 var reset_times = function() {
-	times.UTCstartTime.add(1, 'hour');
-	times.UTC.endTime = times.UTCstartTime.clone().minute(59).second(59);
+	times.UTCstartTime.add(1, 'minutes');
+	// times.UTCendTime = times.UTCstartTime.clone().minute(59).second(59);
+	times.UTCendTime = times.UTCstartTime.clone().second(59);
 	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
-	times.UTCendTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
-	times.startTime.add(1, 'hour');
-	times.endTime = times.startTime.clone().minute(59).second(59);
+	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
+	times.startTime.add(1, 'minutes');
+	// times.endTime = times.startTime.clone().minute(59).second(59);
+	times.endTime = times.startTime.clone().second(59);
 	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
 	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
 }
 
 
 var job = new CronJob({
-	cronTime: '0 0 0-23 * * *',
+	// cronTime: '0 0 0-23 * * *',
+	cronTime: '0 0-59 * * * *',
 	onTick: function() {
 		
 		var query = 'SELECT * FROM 	 Tweets WHERE submitted_at >= ? AND submitted_at <= ? ' + 
 							  'ORDER BY vote_count DESC LIMIT 1';
-		
-		console.log("startTime = " + times.startTime.format("YYYY-MM-DD HH:mm:ss"));
-		console.log("endTime = " + times.endTime.format("YYYY-MM-DD HH:mm:ss"));
-		connection.query(query, [times.startTime_format, times.endTime_format], function(err, results) {
+		var now = moment.tz("America/New_York").format("YYYY-MM-DD HH:mm:ss");
+		console.log("nowTime = " + now);
+		console.log("startTime = " + times.startTime_format);
+		console.log("endTime = " + times.endTime_format + '\n');
+		connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 			if(err) {
 				console.log(err);
 			}
@@ -71,15 +79,16 @@ var job = new CronJob({
 			  if(error){
 			    console.log(error);
 			  }
-		  	  console.log(tweet);  // Tweet body.
+		  	  console.log("tweet: " + tweet);  // Tweet body.
 		 		 //console.log(response);  // Raw response object.
 			});
 		});
-		
+		var d = new Date();
+		console.log("Date: " + d.toString());
 		reset_times();		
 	},
 	start: true,
-	timeZone: 'US/Eastern'
+	timeZone: "America/New_York"
 });
 
 var twitter = new Twitter({
@@ -129,7 +138,7 @@ passport.use(new Strategy({
 	function(token, tokenSecret, profile, cb) {
 		process.nextTick(function() {
 			var query = "SELECT * FROM Users WHERE twitter_id=?";
-			connection.query(query, [profile.id_str], function(err, results) {
+			connection.query(query, [profile._json.id_str], function(err, results) {
 				if(err) {
 					console.log(err);
 					throw err;
@@ -209,15 +218,25 @@ app.get('/logout/twitter', function(req, res) {
 
 	
 app.get('/profile', authUser, function(req, res) {
+	var query = 'SELECT * FROM Tweets WHERE user_id=? ORDER BY submitted_at DESC'; 
+	
+	connection.query(query, [req.user.id], function(err, results) {
+		if(err) {
+			console.log(err);
+		};
+		console.log(results);
+
 		res.render('profile', {
-			user : req.user
+			user : req.user,
+			user_tweets: results,
 		});
-	});
+	})	
+});
 
 app.get('/', authUser, function(req, res) {
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
 				'ORDER BY vote_count DESC LIMIT 50';
-	var UTCstartTime = 
+	
 	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 		if(err) {
 			console.log(err);
@@ -276,14 +295,19 @@ app.get('/random', authUser, function(req, res) {
 });
 
 app.post('/tweets/submit', function(req, res) {
-	var query = 'INSERT INTO Tweets(body) VALUES(?)';
+	var query = 'INSERT INTO Tweets(body, user, user_id, submitted_at) VALUES(?,?,?,?)';
 	var body = req.body.body;
-	connection.query(query, [body], function(err, results) {
+	var user = req.user.display_name;
+	var user_id = req.user.id;
+	var submitted_at = moment();
+	var submitted_at_format = submitted_at.format("YYYY-MM-DD HH:mm:ss")
+	console.log("submitted_at: " + submitted_at_format);
+	connection.query(query, [body, user, user_id, submitted_at_format], function(err, results) {
 		if(err) {
 			console.log(err);
 		}
 		res.redirect('/');
-	})
+	}); 
 });
 
 app.post('/vote/:id([0-9]+)', function(req, res) {
@@ -301,7 +325,7 @@ app.post('/vote/:id([0-9]+)', function(req, res) {
 app.get('/refresh', function(req, res) {
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
 				'ORDER BY vote_count DESC LIMIT 50';
-	connection.query(query, [times.startTime_format, times.endTime_format], function(err, results) {
+	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 		if(err) {
 			console.log(err);
 		}

@@ -27,24 +27,29 @@
 
 			<!-- Submit Form -->
 			<div id="tweet-submit">
+				<% if(login) { %>
 			<!-- <form action="/tweets/submit" method="POST"> -->
 				<p> Submit info </p>
 				<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
 				<button id="form_submit">Submit</button>
 				<button id="form_cancel">Cancel</button>
+				<% } else { %>
+					<a src="/login/twitter">Sign in</a>
+				<% } %>
 			</div>
 
 			
 
 			<!-- Test button -->
-			<span>
+			<div>
 				<button id="refresh">refresh</button><br>
 				<!-- TIMER -->
 				<div id="timer"></div>
-			</span>
-			<div id="tweet_list">
-			 	<%- include('_tweet_list', { tweets: tweets }) %>
+				<div id="timer2"></div>
 			</div>
+			<span id="tweet_list">
+			 	<%- include('_tweet_list', { tweets: tweets }) %>
+			</span>
 		</main>
 	</body>	
 

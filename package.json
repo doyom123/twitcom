@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "cronjob runs every hour to update twitter status with higheset rated suggestiont",
   "main": "app.js",
+  "engines": {
+    "node": "4.2.6"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

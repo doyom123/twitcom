@@ -29,8 +29,10 @@ $(function() {
 
 	// timer
 	function showTime() {
-		var now = moment.tz("US/Eastern").format("HH:mm:ss");
+		var now = moment.tz("Europe/Dublin").format("LTS");
 		$('#timer').html(now);
+		var now2 = new Date().toString();
+		$('#timer2').html(now2);
 	}
 
 	var timer = setInterval(showTime, 500);
