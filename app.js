@@ -21,11 +21,13 @@ var Strategy = require('passport-twitter').Strategy;
 var app = express();
 var router = express.Router();
 var connection = mysql.createConnection({
-	host: env.mysql_host,
-	user: env.mysql_username,
-	password: env.mysql_password,
-	database: env.database_name
+	host: env.MYSQL_HOST,
+	user: env.MYSQL_USERNAME,
+	password: env.MYSQL_PASSWORD,
+	database: env.DATABASE_NAME
 });
+
+var port = process.env.PORT || 8080;
 
 var times = {
 };
@@ -106,8 +108,8 @@ connection.connect(function(err) {
 		return;
 	}
 	console.log('Connected to the database');
-	app.listen(8080, function() {
-		console.log('Web Server listening on port 8080');
+	app.listen(port, function() {
+		console.log('Web Server listening on port ' + port);
 	});
 	init_times();
 });
@@ -132,8 +134,8 @@ app.use(session({
 }));
 
 passport.use(new Strategy({
-		consumerKey 	: env.consumer_key,
-		consumerSecret 	: env.consumer_secret,
+		consumerKey 	: process.env.CONSUMER_KEY,
+		consumerSecret 	: process.env.CONSUMER_SECRET,
 		callbackURL 	: env.callback_url
 	},
 	function(token, tokenSecret, profile, cb) {
@@ -240,6 +242,7 @@ app.get('/', authUser, function(req, res) {
 	
 	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 		if(err) {
+			console.log("** / route error **")
 			console.log(err);
 		}
 		if(req.user) {
