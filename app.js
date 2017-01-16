@@ -21,13 +21,11 @@ var Strategy = require('passport-twitter').Strategy;
 var app = express();
 var router = express.Router();
 var connection = mysql.createConnection({
-	host: '127.0.0.1',
-	user: 'vagrant',
-	password: '',
-	database: 'twitcom'
+	host: env.mysql_host,
+	user: env.mysql_username,
+	password: env.mysql_password,
+	database: env.database_name
 });
-
-var port = process.env.PORT || 8080;
 
 var times = {
 };
@@ -61,7 +59,7 @@ var reset_times = function() {
 
 var job = new CronJob({
 	// cronTime: '0 0 0-23 * * *',
-	cronTime: '* * 2 * * *',
+	cronTime: '0 0-59 * * * *',
 	onTick: function() {
 		
 		var query = 'SELECT * FROM 	 Tweets WHERE submitted_at >= ? AND submitted_at <= ? ' + 
@@ -90,7 +88,7 @@ var job = new CronJob({
 		console.log("Date: " + d.toString());
 		reset_times();		
 	},
-	start: false,
+	start: true,
 	timeZone: "America/New_York"
 });
 
@@ -101,22 +99,18 @@ var twitter = new Twitter({
 	access_token_secret: env.access_token_secret
 });
 
-app.listen(port, function() {
-    console.log('Web Server listening on ' + port);
+connection.connect(function(err) {
+	if(err) {
+		console.log(err);
+		console.log("connect");
+		return;
+	}
+	console.log('Connected to the database');
+	app.listen(8080, function() {
+		console.log('Web Server listening on port 8080');
+	});
+	init_times();
 });
-
-// connection.connect(function(err) {
-// 	if(err) {
-// 		console.log(err);
-// 		console.log("MySQL could not connect");
-// 	}
-
-// 	console.log('Connected to the database');
-// 	app.listen(port, function() {
-// 		console.log('Web Server listening on port 8080');
-// 	});
-// 	init_times();
-// });
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -137,56 +131,56 @@ app.use(session({
 	}, 
 }));
 
-// passport.use(new Strategy({
-// 		consumerKey 	: env.consumer_key,
-// 		consumerSecret 	: env.consumer_secret,
-// 		callbackURL 	: env.callback_url
-// 	},
-// 	function(token, tokenSecret, profile, cb) {
-// 		process.nextTick(function() {
-// 			var query = "SELECT * FROM Users WHERE twitter_id=?";
-// 			connection.query(query, [profile._json.id_str], function(err, results) {
-// 				if(err) {
-// 					console.log(err);
-// 					throw err;
-// 				}
-// 				if(results.length == 0) {
+passport.use(new Strategy({
+		consumerKey 	: env.consumer_key,
+		consumerSecret 	: env.consumer_secret,
+		callbackURL 	: env.callback_url
+	},
+	function(token, tokenSecret, profile, cb) {
+		process.nextTick(function() {
+			var query = "SELECT * FROM Users WHERE twitter_id=?";
+			connection.query(query, [profile._json.id_str], function(err, results) {
+				if(err) {
+					console.log(err);
+					throw err;
+				}
+				if(results.length == 0) {
 
-// 					var query = "INSERT INTO Users(twitter_id, name, display_name) VALUES(?,?,?)";
-// 					var twitter_id = profile._json.id_str;
-// 					var name = profile._json.screen_name;
-// 					var display_name = profile._json.name;
-// 					var token = token;
-// 					console.log(profile._json.id_str);
-// 					connection.query(query, [twitter_id, name, display_name], function(err, results) {
-// 						console.log("Inserted ID: " + twitter_id + " name: " + name);
-// 						if(err) throw err;
-// 						var user = {
-// 							id: profile.id_str,
-// 							username: profile.username,
-// 							display_name: profile.displayName,
-// 							token: token,
-// 							token: tokenSecret
-// 						}
-// 						return  cb(null, profile);
-// 					});
-// 				} else {
-// 					console.log("User already exists in database");
-// 					return cb(null, profile);
-// 				}
-// 			});
-// 		});
-// 	}));
-// app.use(passport.initialize());
-// app.use(passport.session());
+					var query = "INSERT INTO Users(twitter_id, name, display_name) VALUES(?,?,?)";
+					var twitter_id = profile._json.id_str;
+					var name = profile._json.screen_name;
+					var display_name = profile._json.name;
+					var token = token;
+					console.log(profile._json.id_str);
+					connection.query(query, [twitter_id, name, display_name], function(err, results) {
+						console.log("Inserted ID: " + twitter_id + " name: " + name);
+						if(err) throw err;
+						var user = {
+							id: profile.id_str,
+							username: profile.username,
+							display_name: profile.displayName,
+							token: token,
+							token: tokenSecret
+						}
+						return  cb(null, profile);
+					});
+				} else {
+					console.log("User already exists in database");
+					return cb(null, profile);
+				}
+			});
+		});
+	}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // login routes
-// var options = {
-// 	host: 'http://127.0.0.1',
-// 	port: 3306,
-// 	user: 'vagrant',
-// 	database: 'twitcom'
-// }
+var options = {
+	host: 'http://127.0.0.1',
+	port: 3306,
+	user: 'vagrant',
+	database: 'twitcom'
+}
 var sessionStore = new MySQLStore({}, connection);
 
 passport.serializeUser(function(user, done) {
@@ -240,32 +234,28 @@ app.get('/profile', authUser, function(req, res) {
 	})	
 });
 
-// app.get('/', authUser, function(req, res) {
-// 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
-// 				'ORDER BY vote_count DESC LIMIT 50';
+app.get('/', authUser, function(req, res) {
+	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
+				'ORDER BY vote_count DESC LIMIT 50';
 	
-// 	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
-// 		if(err) {
-// 			console.log(err);
-// 		}
-// 		if(req.user) {
-// 			console.log(req.user.profile_image_url);
-// 		} else {
-// 			console.log("USER NOT LOGGED IN");
-// 		}
-// 		for(var i = 0; i < results.length; i++) {
-// 			var tweet = results[i];
-// 			tweet.rank = i + 1;
-// 		}
-// 		res.render('twitcom', { 
-// 			tweets: results,
-// 			user: req.user
-// 		});
-// 	});
-// });
-
-app.get('/', function(req, res) {
-	res.send("hi");
+	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
+		if(err) {
+			console.log(err);
+		}
+		if(req.user) {
+			console.log(req.user.profile_image_url);
+		} else {
+			console.log("USER NOT LOGGED IN");
+		}
+		for(var i = 0; i < results.length; i++) {
+			var tweet = results[i];
+			tweet.rank = i + 1;
+		}
+		res.render('twitcom', { 
+			tweets: results,
+			user: req.user
+		});
+	});
 });
 
 app.get('/latest', authUser, function(req, res) {
