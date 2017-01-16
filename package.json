@@ -20,6 +20,7 @@
     "body-parser": "^1.15.2",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
+    "cron": "^1.2.1",
     "dotenv": "^2.0.0",
     "ejs": "^2.5.5",
     "express": "^4.14.0",
@@ -32,6 +33,8 @@
     "mysql": "^2.12.0",
     "nodemon": "^1.11.0",
     "oauth": "^0.9.15",
+    "passport": "^0.3.2",
+    "passport-twitter": "^1.0.4",
     "twitter": "^1.7.0"
   },
   "bugs": {
