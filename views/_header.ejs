@@ -1,15 +1,15 @@
 <!-- views/_header.ejs -->
 <article class="_header">
 	<!-- header text -->
-	<a href="/">home</a>
-
+	<a class="home" href="/">community</a>
+	<a class="home2" href="/">twitter</a>
 	<span id="head-right">
 		<% if(login){ %>
 			<img src="<%= user.profile_image_url_https %>" >
-			<a href="/profile"><%= user.name %></a>
-			<a href="/logout/twitter">logout</a>
+			<a class="header-name" href="/profile">profile</a>
+			<a class="header-logout" href="/logout/twitter">logout</a>
 		<% } else{%>
-			<a href="/login/twitter">login</a>
+			<a class="header-login" href="/login/twitter">login</a>
 		<% } %>
 	</span>
 	

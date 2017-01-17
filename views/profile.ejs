@@ -21,17 +21,16 @@
 				<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
 				<button id="form_submit">Submit</button>
 				<button id="form_cancel">Cancel</button>
-		</div>>
+		</div>
 
 		<main>
-			<p> hi </p>
 			<div>user id: <%= user.id %></div>
 			<div>user name: <%= user.created_at %></div>
 
-			<!-- User tweets list -->
-			<% for(var i = 0; i < user_tweets.length; i++) { %>
-				<p><%= user_tweets[i].body %></p>
-			<% } %>
+			<div class="_tweet_list">
+
+			 	<%- include('_tweet_list', { tweets: user_tweets }) %>
+			</div>
 
 		</main>		
 	</body>

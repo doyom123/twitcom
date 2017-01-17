@@ -23,7 +23,7 @@ $(function() {
 	$('#refresh').click(function() {
 		var url = "/refresh";
 		$.get(url, function( data ) {
-			$('#tweet_list').html(data);
+			$('_tweet_list').html(data);
 		});
 	});
 

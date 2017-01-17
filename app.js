@@ -33,36 +33,36 @@ var port = process.env.PORT || 8080;
 var times = {
 };
 var init_times = function() {
-	times.UTCstartTime = moment().second(0);
-	times.UTCendTime = moment().second(59);
-	// times.UTCstartTime = moment().minute(0).second(0);
-	// times.UTCendTime = moment().minute(59).second(59);
+	// times.UTCstartTime = moment().second(0);
+	// times.UTCendTime = moment().second(59);
+	times.UTCstartTime = moment().minute(0).second(0);
+	times.UTCendTime = moment().minute(59).second(59);
 	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
 	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
-	// times.startTime = moment.tz("US/Eastern").minute(0).second(0);
-	// times.endTime = times.startTime.clone().minute(59).second(59);
-	times.startTime = moment.tz("America/New_York").second(0);
-	times.endTime = times.startTime.clone().second(59);
+	times.startTime = moment.tz("US/Eastern").minute(0).second(0);
+	times.endTime = times.startTime.clone().minute(59).second(59);
+	// times.startTime = moment.tz("America/New_York").second(0);
+	// times.endTime = times.startTime.clone().second(59);
 	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
 	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
 }
 var reset_times = function() {
-	times.UTCstartTime.add(1, 'minutes');
-	// times.UTCendTime = times.UTCstartTime.clone().minute(59).second(59);
-	times.UTCendTime = times.UTCstartTime.clone().second(59);
+	times.UTCstartTime.add(1, 'hours');
+	times.UTCendTime = times.UTCstartTime.clone().minute(59).second(59);
+	// times.UTCendTime = times.UTCstartTime.clone().second(59);
 	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
 	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
-	times.startTime.add(1, 'minutes');
-	// times.endTime = times.startTime.clone().minute(59).second(59);
-	times.endTime = times.startTime.clone().second(59);
+	times.startTime.add(1, 'hours');
+	times.endTime = times.startTime.clone().minute(59).second(59);
+	// times.endTime = times.startTime.clone().second(59);
 	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
 	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
 }
 
 
 var job = new CronJob({
-	// cronTime: '0 0 0-23 * * *',
-	cronTime: '0 0-59 * * * *',
+	cronTime: '0 0 0-23 * * *',
+	// cronTime: '0 0-59 * * * *',
 	onTick: function() {
 		
 		var query = 'SELECT * FROM 	 Tweets WHERE submitted_at >= ? AND submitted_at <= ? ' + 
@@ -84,7 +84,7 @@ var job = new CronJob({
 			  if(error){
 			    console.log(error);
 			  }
-		  	  console.log("tweet: " + tweet);  // Tweet body.
+		  	  console.log("tweet: " + tweet);  // Tweet body
 		 		 //console.log(response);  // Raw response object.
 			});
 		});
@@ -241,7 +241,7 @@ app.get('/profile', authUser, function(req, res) {
 
 app.get('/', authUser, function(req, res) {
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
-				'ORDER BY vote_count DESC LIMIT 50';
+				'ORDER BY vote_count DESC';
 	
 	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 		if(err) {

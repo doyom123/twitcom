@@ -45,22 +45,32 @@
 					<button id="refresh">&#8635;</button><br>
 				</span>
 			</div>
+			<div class="_tweet_list">
 
 			 	<%- include('_tweet_list', { tweets: tweets }) %>
 			</div>
 
-			<span class="right">
+			<div class="right">
+
+				<div class="right-timer">
+					Next tweet in:
+					<span class="highlight">
+						<div id="timer"></div>
+					</span>
+				</div>
+
+			</div>
+			<div class="right2">
 				<div class="right_submit">
 					<button id="submit_button">submit</button>
 				</div>
 
-				<div class="right-timer">
-					<div id="timer"></div>
-				</div>
-
-			</span>
+			</div>
 
 		</main>
+
+		<footer> 
+		</footer>
 	</body>	
 
 </html>
