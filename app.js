@@ -20,11 +20,12 @@ var MySQLStore = require('express-mysql-session');
 var Strategy = require('passport-twitter').Strategy;
 var app = express();
 var router = express.Router();
-var connection = mysql.createConnection({
+var connection = mysql.createPool({
 	host: process.env.MYSQL_HOST,
 	user: process.env.MYSQL_USERNAME,
 	password: process.env.MYSQL_PASSWORD,
-	database: process.env.DATABASE_NAME
+	database: process.env.DATABASE_NAME,
+	connectionLimit: 100
 });
 
 var port = process.env.PORT || 8080;
@@ -73,6 +74,7 @@ var job = new CronJob({
 		connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 			if(err) {
 				console.log(err);
+				return;
 			}
 			if(results.length == 0) {
 				return;
@@ -101,7 +103,7 @@ var twitter = new Twitter({
 	access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-connection.connect(function(err) {
+connection.getConnection(function(err, connection) {
 	if(err) {
 		console.log(err);
 		console.log("connect");
@@ -136,7 +138,7 @@ app.use(session({
 passport.use(new Strategy({
 		consumerKey 	: process.env.CONSUMER_KEY,
 		consumerSecret 	: process.env.CONSUMER_SECRET,
-		callbackURL 	: process.env.CALLBACK_URL
+		callbackURL 	: 'http://127.0.0.1:5000/login/twitter/callback'
 	},
 	function(token, tokenSecret, profile, cb) {
 		process.nextTick(function() {
@@ -144,7 +146,6 @@ passport.use(new Strategy({
 			connection.query(query, [profile._json.id_str], function(err, results) {
 				if(err) {
 					console.log(err);
-					throw err;
 				}
 				if(results.length == 0) {
 
@@ -156,7 +157,9 @@ passport.use(new Strategy({
 					console.log(profile._json.id_str);
 					connection.query(query, [twitter_id, name, display_name], function(err, results) {
 						console.log("Inserted ID: " + twitter_id + " name: " + name);
-						if(err) throw err;
+						if(err) {
+							console.log(err);
+						}
 						var user = {
 							id: profile.id_str,
 							username: profile.username,

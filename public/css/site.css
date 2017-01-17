@@ -14,54 +14,90 @@ header {
 	right: 0;
 	border-bottom: 1px solid #d9d9d9;
 	height: 50px;
-	background-color: #f0f0f0;
+	background-color: #BCBCBC;
 }
 
 
 main {
-	width: 600px;
+	width: 800px;
 	margin: 60px auto 0px auto;
 }
 
 body {
 	box-sizing: border-box;
+	font-family: arial, sans-serif;
+	background-color: #BCBCBC;
 }
 
 .row {
-	width: 600px;
+	width: 600px;BCBCBC
 	margin: 10px;
+	padding: 10px;
 }
 
 .order {
-
-	float: right;
+}
+#refresh {
 }
 
 button {
 	display: inline-block;
+	border-style: none;
 }
 
 .tweet_list {
+	display: inline;
+	text-align: center;
+	float: left;
+	max-width: 400px;
+}
 
-
+.right {
+	display: inline;
+	width: 300px;
+	height: 200px;
+	float: right;
+	background-color: #ffffff;
+	border-radius: 5px;
+	padding: 10px;
+}
+.right-box {
 }
 
 .tweet {
-	
-	display: inline-block;
-	border-style: solid;
-	border-color: #D3D3D3;
-	background-color: #f0f0f0;
-	border-width: 1px;
-	width: 600px;
+	float: left;
+	display: inline;
+	border-style: none;
+	background-color: #E9E9E9;
+	width: 400px;
 	height: auto;
 	margin: 10px;
 	padding: 5px;
-	
+	border-radius: 5px;
 }
 
+.tweet-rank {
+	float: left;
+    margin: 0 20px 10px 10px;
+    color: #ffffff;
+    background-color: #424242;
+    padding:10px;
+    border-radius: 5px;
+
+}
 .tweet-body {
+	font-size: 15px;
 	word-wrap: break-word;
+	text-align: left;
+}
+#_tweet-body {
+	margin: 10px 0 5px 5px;
+}
+
+.tweet-two {
+	margin: 10px;
+	font-size: 12px;
+	float: right;
 }
 
 
@@ -91,3 +127,6 @@ button {
 	width: 300px;
 }
 
+.vote_button, .neg_button {
+	border-style: none;
+}

@@ -1,14 +1,21 @@
 <!-- views/_tweet.ejs -->
 <article class="tweet">
 	<!-- tweet text -->
-	<p>
-		<div class="tweet-body"><%= tweet.rank %> - <%= tweet.body %></div>
-	</p>
-	<p>
-		<span> @<%= tweet.user %> / votes: <%= tweet.vote_count %></span>
+	<div class="tweet-one">
+		<span class="tweet-rank">
+			<%= tweet.rank %>
+		</span>
 
-		<% if(login) { %>
-			<button class="vote_button" name="vote_button" id="<%= tweet.id %>">+</button>
-		<% } %>
-	</p>
+		<span class="tweet-body">
+			<div id="_tweet-body">
+				<%= tweet.body %>
+			</div>
+			<div class="tweet-two">
+				@<%= tweet.user %> &emsp; <%= tweet.vote_count %>
+				<button class="vote_button" name="vote_button" id="<%= tweet.id %>">▲</button>
+				<button class="neg_button" name="neg_button" id="<%= tweet.id %>">▼</button>
+			</div>
+		</span>
+	</div>
+
 </article>

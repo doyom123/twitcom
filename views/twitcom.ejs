@@ -16,15 +16,6 @@
 		</header>
 
 		<main>
-			<span class="row">
-				<button id="submit_button">submit</button>
-
-				<span class="order">
-					<button onclick="window.location.href='/'">Votes</button>
-					<button onclick="window.location.href='/latest'">Latest</button>
-					<button onclick="window.location.href='/random'">Random</button>
-				</span>
-			</span>
 
 			<!-- Submit Form -->
 			<div id="tweet-submit">
@@ -42,15 +33,33 @@
 			
 
 			<!-- Test button -->
-			<div>
-				<button id="refresh">refresh</button><br>
-				<!-- TIMER -->
-				<div id="timer"></div>
-				<div id="timer2"></div>
+
+			<div id="tweet_list">
+			<div class="row">
+				<span class="order">
+					<button onclick="window.location.href='/'">Votes</button>
+					<button onclick="window.location.href='/latest'">Latest</button>
+					<button onclick="window.location.href='/random'">Random</button>
+				</span>
+				<span>
+					<button id="refresh">&#8635;</button><br>
+				</span>
 			</div>
-			<span id="tweet_list">
+
 			 	<%- include('_tweet_list', { tweets: tweets }) %>
+			</div>
+
+			<span class="right">
+				<div class="right_submit">
+					<button id="submit_button">submit</button>
+				</div>
+
+				<div class="right-timer">
+					<div id="timer"></div>
+				</div>
+
 			</span>
+
 		</main>
 	</body>	
 
