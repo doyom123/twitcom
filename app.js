@@ -28,6 +28,7 @@ var connection = mysql.createPool({
 	connectionLimit: 100
 });
 
+
 var port = process.env.PORT || 8080;
 
 var times = {
@@ -103,18 +104,18 @@ var twitter = new Twitter({
 	access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-connection.getConnection(function(err, connection) {
-	if(err) {
-		console.log(err);
-		console.log("connect");
-		return;
-	}
-	console.log('Connected to the database');
 	app.listen(port, function() {
 		console.log('Web Server listening on port ' + port);
 	});
 	init_times();
-});
+// connection.getConnection(function(err, connection) {
+// 	if(err) {
+// 		console.log(err);
+// 		console.log("connect");
+// 		return;
+// 	}
+// 	console.log('Connected to the database');
+// });
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
