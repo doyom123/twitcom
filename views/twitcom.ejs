@@ -17,56 +17,47 @@
 
 		<main>
 
-			<!-- Submit Form -->
-			<div id="tweet-submit">
-				<% if(login) { %>
-			<!-- <form action="/tweets/submit" method="POST"> -->
-				<p> Submit info </p>
-				<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
-				<button id="form_submit">Submit</button>
-				<button id="form_cancel">Cancel</button>
-				<% } else { %>
-					<a src="/login/twitter">Sign in</a>
-				<% } %>
-			</div>
+			<span class="left_col">
+				<div class="row">
+					<button id="submit_button">Submit</button>
 
-			
+					<button id="refresh_button">&#8635;</button>
+					<button id="votes_button" onclick="window.location.href='/'">Votes</button>
+					<button id="latest_button" onclick="window.location.href='/latest'">Latest</button>
+					<button id="random_buttom" onclick="window.location.href='/random'">Random</button>
 
-			<!-- Test button -->
+				</div>
 
-			<div id="tweet_list">
-			<div class="row">
-				<span class="order">
-					<button onclick="window.location.href='/'">Votes</button>
-					<button onclick="window.location.href='/latest'">Latest</button>
-					<button onclick="window.location.href='/random'">Random</button>
-				</span>
-				<span>
-					<button id="refresh">&#8635;</button><br>
-				</span>
-			</div>
-			<div class="_tweet_list">
+				<div class="tweet_submit_form">
+					<% if(login) { %>
+					<!-- <form action="/tweets/submit" method="POST"> -->
+					<textarea id="form_body" name="body" placeholder="Go on..." maxlength="144"></textarea><br>
+					<div class="tweet_submit_btns">
+						<button id="form_submit_btn">Submit</button>
+						<button id="form_cancel_btn">Cancel</button>
+					</div>
 
-			 	<%- include('_tweet_list', { tweets: tweets }) %>
-			</div>
+					<% } else { %>
+						<a src="/login/twitter">Sign in</a>
+					<% } %>
+				</div>
 
-			<div class="right">
+				<div id="line">
+				</div>
+				<%- include('_tweet_list', { tweets: tweets }) %>
 
-				<div class="right-timer">
+			</span>
+
+			<span class="right_col">
+				<div class="right_timer">
 					Next tweet in:
 					<span class="highlight">
 						<div id="timer"></div>
 					</span>
 				</div>
+			</span>
 
-			</div>
-			<div class="right2">
-				<div class="right_submit">
-					<button id="submit_button">submit</button>
-				</div>
-
-			</div>
-
+			
 		</main>
 
 		<footer> 

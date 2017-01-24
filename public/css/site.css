@@ -7,13 +7,26 @@ a:link, a:hover, a:visited {
 	text-decoration: none;
 }
 
+.left_col {
+	float: left;
+	display: table-cell;
+	width: 400px;
+
+}
+
+.right_col {
+	display: table-cell;
+	width: 400px;
+	float: right;
+}
+
 header {
 	top: 0;
 	left: 0;
 	right: 0;
 	border-bottom: 1px solid #d9d9d9;
 	height: 50px;
-	background-color: #BCBCBC;
+	background-color: #fdfdfd;
 }
 
 .home, #head-right {
@@ -31,30 +44,54 @@ header {
 }
 
 main {
-	width: 800px;
+	width: 900px;
 	margin: 60px auto 0px auto;
+	display: table;
 }
 
 body {
 	box-sizing: border-box;
 	font-family: arial, sans-serif;
-	background-color: #BCBCBC;
+	background-color: #fdfdfd;
 }
 
 .row {
-	width: 600px;BCBCBC
+	width: 400px;
 	margin: 10px;
 	padding: 10px;
-}
 
-.order {
 }
-#refresh {
+#line {
+	width: 400px;
+	position: relative;
+	border-bottom-style: solid;
+	left: 20px;
 }
 
 button {
 	display: inline-block;
 	border-style: none;
+	background-color: #fdfdfd;
+}
+button:focus {
+	outline: 0;
+}
+
+button:hover {
+	background-color: #eeeeee;
+}
+
+#latest_button, #random_buttom, #votes_button, #refresh_button {
+	padding: 14px;
+	float: right;
+}
+
+#submit_button {
+	padding: 14px;
+
+}
+#submit_button:hover {
+	background-color: #eeeeee;
 }
 
 .tweet_list {
@@ -62,6 +99,7 @@ button {
 	text-align: center;
 	float: left;
 	max-width: 400px;
+	width: 400px;
 }
 
 .right {
@@ -74,8 +112,6 @@ button {
 	margin-top: 10px;
 	color: #F02475;
 	font-weight: bold;
-}
-.right-box {
 }
 
 .right2 {
@@ -91,21 +127,25 @@ button {
 	float: left;
 	display: inline;
 	border-style: none;
-	background-color: #E9E9E9;
+	border-color: #e9e9e9;
+	border-bottom-style: solid;
+	border-width: 1px;
+	/*background-color: #E9E9E9;*/
+	background-color: #fdfdfd;
 	width: 400px;
 	height: auto;
 	margin: 10px;
 	padding: 5px;
-	border-radius: 5px;
 }
 
 .tweet-rank {
 	float: left;
-    margin: 0 20px 10px 10px;
-    color: #ffffff;
-    background-color: #424242;
-    padding:10px;
-    border-radius: 5px;
+    margin: 0 20px 20px 10px;
+    color: #C5CFC6;
+    background-color: #ffffff;
+    padding: 0px;
+    font-size: 20px;
+    font-family: Georgia, serif;
 
 }
 .tweet-body {
@@ -116,11 +156,14 @@ button {
 }
 #_tweet-body {
 	margin: 10px 10px 15px 5px;
+	font-family: Georgia, serif;
+	font-size: 16px;
 }
 
 .tweet-two {
-	margin: 10px;
+	margin: 0 10px 10px 10px;
 	font-size: 12px;
+	font-style: italic;
 	float: right;
 }
 
@@ -141,12 +184,7 @@ button {
 	float: right;
 }
 
-#tweet-submit {
-	display: none;
-	position: fixed;
-	z-index: 1;
-	background-color: #80B3FF;
-}
+
 
 #timer {
 	font-size: 40px;
@@ -163,4 +201,59 @@ button {
 
 .vote_button, .neg_button {
 	border-style: none;
+	padding: 8px;
+}
+
+/* Tweet Submit Form */
+.tweet_submit_form {
+	background-color: #eeeeee;
+	width: 400px;
+	height: 200px;
+	display: none;
+	position: relative;
+	left: 20px;
+	top: -20px;
+}
+
+#form_body {
+	margin: 10px;
+	resize: none;
+	width: 358px;
+	height: 100px;
+	max-height: 200px;
+	border: none;
+	padding: 10px;
+}
+#form_body:focus {
+	outline: none;
+}
+
+.tweet_submit_btns {
+	float:right;
+
+}
+
+#form_submit_btn {
+	padding: 10px;
+	margin: 0 0 10px 10px;
+	background-color: #031A4A;
+	color: #ffffff;
+	font-size: 12px;
+
+}
+
+#form_cancel_btn {
+	padding: 10px;
+	margin: 0 10px 10px 0;
+	background-color: #031A4A;
+	color: #ffffff;
+	font-size: 12px;
+}
+
+/* Right */
+.right_timer {
+	padding: 20px;
+	margin: 80px 0 0 0;
+	background-color: #ED5780;
+	font-weight: bold;
 }

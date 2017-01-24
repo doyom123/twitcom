@@ -1,13 +1,17 @@
 $(function() {
+
 	$("#submit_button").click(function() {
-		$("#tweet-submit").css("display", "block");
+		$(".tweet_submit_form").slideDown("fast");
+		$("#submit_button").css("background-color", "#eeeeee");
 	});
 
-	$("#form_cancel").click(function() {
-		$("#tweet-submit").css("display", "none");
+	$("#form_cancel_btn").click(function() {
+		$(".tweet_submit_form").slideUp("fast", function() {
+			$("#submit_button").css("background-color", "#fdfdfd");
+		});
 	});
 
-	$('#form_submit').click(function() {
+	$('#form_submit_btn').click(function() {
 		var id = $(this).attr('id');
 		var url = "/tweets/submit"
 		var text = $("#form_body").val();
