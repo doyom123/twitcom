@@ -1,5 +1,15 @@
 $(function() {
 
+	// Refresh Tweet List
+	function refresh() {
+		var url = "/refresh";
+		$.get(url, function( data ) {
+			console.log(data);
+			$("#tweet_list").html(data);
+		});
+		console.log("refresh done");
+	}
+
 	$("#submit_button").click(function() {
 		$(".tweet_submit_form").slideDown("fast");
 		$("#submit_button").css("background-color", "#eeeeee");
@@ -11,7 +21,7 @@ $(function() {
 		});
 	});
 
-	$('#form_submit_btn').click(function() {
+	$('#form_submit_btn').one("click", function() {
 		var id = $(this).attr('id');
 		var url = "/tweets/submit"
 		var text = $("#form_body").val();
@@ -24,12 +34,14 @@ $(function() {
 		} 
 	});
 
-	$('#refresh').click(function() {
-		var url = "/refresh";
-		$.get(url, function( data ) {
-			$('_tweet_list').html(data);
-		});
+	// $('#refresh_button').one("click", function() {
+	// 	refresh();
+	// });
+
+	$('#refresh_button').on('click', function() {
+		refresh();
 	});
+
 
 	// timer
 	function showTime() {

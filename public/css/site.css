@@ -10,7 +10,7 @@ a:link, a:hover, a:visited {
 .left_col {
 	float: left;
 	display: table-cell;
-	width: 400px;
+	width: 420px;
 
 }
 
@@ -24,7 +24,8 @@ header {
 	top: 0;
 	left: 0;
 	right: 0;
-	border-bottom: 1px solid #d9d9d9;
+	/*border-top: 4px solid #d9d9d9;*/
+	border-color: #ED5780;
 	height: 50px;
 	background-color: #fdfdfd;
 }
@@ -35,7 +36,7 @@ header {
 }
 .home2 {
 	font-size: 20px;
-	color: #ffffff;	
+	color: #ED5780;	
 }
 
 .header-login {
@@ -80,10 +81,12 @@ button:focus {
 button:hover {
 	background-color: #eeeeee;
 }
+.order {
+	float:right;
+}
 
 #latest_button, #random_buttom, #votes_button, #refresh_button {
 	padding: 14px;
-	float: right;
 }
 
 #submit_button {
@@ -134,7 +137,6 @@ button:hover {
 	background-color: #fdfdfd;
 	width: 400px;
 	height: auto;
-	margin: 10px;
 	padding: 5px;
 }
 
@@ -253,7 +255,7 @@ button:hover {
 /* Right */
 .right_timer {
 	padding: 20px;
-	margin: 80px 0 0 0;
+	margin: 100px 0 0 0;
 	background-color: #ED5780;
 	font-weight: bold;
 }

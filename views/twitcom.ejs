@@ -20,12 +20,12 @@
 			<span class="left_col">
 				<div class="row">
 					<button id="submit_button">Submit</button>
-
+					<span class="order">
 					<button id="refresh_button">&#8635;</button>
 					<button id="votes_button" onclick="window.location.href='/'">Votes</button>
 					<button id="latest_button" onclick="window.location.href='/latest'">Latest</button>
 					<button id="random_buttom" onclick="window.location.href='/random'">Random</button>
-
+					</span>
 				</div>
 
 				<div class="tweet_submit_form">
@@ -44,8 +44,9 @@
 
 				<div id="line">
 				</div>
-				<%- include('_tweet_list', { tweets: tweets }) %>
-
+				<div id="tweet_list">
+					<%- include('_tweet_list', { tweets: tweets }) %>
+				</div>
 			</span>
 
 			<span class="right_col">
@@ -54,6 +55,11 @@
 					<span class="highlight">
 						<div id="timer"></div>
 					</span>
+				</div>
+				<div>
+					<p>
+						<%- embedded_html %>
+					</p>
 				</div>
 			</span>
 

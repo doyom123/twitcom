@@ -6,6 +6,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var path = require('path');
+var cheerio = require('cheerio');
 var authUser = require('./middleware/authUser.js');
 var Oauth = require('oauth').OAuth;
 var Twitter = require('twitter');
@@ -27,6 +28,7 @@ var connection = mysql.createPool({
 	database: process.env.DATABASE_NAME,
 	connectionLimit: 100
 });
+
 
 
 var port = process.env.PORT || 8080;
@@ -86,7 +88,13 @@ var job = new CronJob({
 			    console.log(error);
 			  }
 		  	  console.log("tweet: " + tweet);  // Tweet body
-		 		 //console.log(response);  // Raw response object.
+		  	  var _tweet_id_str = tweet.id_str;
+		  	  var query = 'INSERT INTO Top_Tweets(id, tweet_id_str) VALUES(?,?)';
+		  	  connection.query(query, [results[0].id, _tweet_id_str], function(err, results) {
+		  	  	  if(err) {
+		  	  	      console.log(err);
+		  	  	  }
+		  	  });
 			});
 		});
 		var d = new Date();
@@ -240,7 +248,10 @@ app.get('/profile', authUser, function(req, res) {
 	})	
 });
 
+
 app.get('/', authUser, function(req, res) {
+
+
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
 				'ORDER BY vote_count DESC';
 	
@@ -258,12 +269,35 @@ app.get('/', authUser, function(req, res) {
 			var tweet = results[i];
 			tweet.rank = i + 1;
 		}
-		res.render('twitcom', { 
-			tweets: results,
-			user: req.user
+		// Get latest tweet
+		var params = {
+			user_id: 1594627808,
+			count: 1
+		}
+		twitter.get('statuses/user_timeline',
+					params, 
+					function(err, tweets, response) {
+			if(err) {
+				console.log(err);
+			}
+			var tweet = tweets[0];
+			var latest_tweet_url = 'https://twitter.com/DoOm02551934/status/' + tweet.id_str;
+			var params = {
+				url: latest_tweet_url
+			}
+			twitter.get('statuses/oembed', params, function(err, tweet, response) {
+				console.log(tweet.html);
+				res.render('twitcom', { 
+					tweets: results,
+					user: req.user,
+					embedded_html: tweet.html
+				});
+			});
 		});
 	});
 });
+
+
 
 app.get('/latest', authUser, function(req, res) {
 	var query = 'SELECT * FROM Tweets ORDER BY submitted_at DESC';
@@ -278,9 +312,13 @@ app.get('/latest', authUser, function(req, res) {
 		if(req.user) {
 			console.log("LOGGEDIN");
 		}
+
+		var html = "<blockquote class=\"twitter-tweet\"><p lang=\"en\" dir=\"ltr\">Happy 50th anniversary to the Wilderness Act! Here&#39;s a great wilderness photo from <a href=\"https://twitter.com/YosemiteNPS\">@YosemiteNPS</a>. <a href=\"https://twitter.com/hashtag/Wilderness50?src=hash\">#Wilderness50</a> <a href=\"http://t.co/HMhbyTg18X\">pic.twitter.com/HMhbyTg18X</a></p>&mdash; US Dept of Interior (@Interior) <a href=\"https://twitter.com/Interior/status/507185938620219395\">September 3, 2014</a></blockquote>\n<script async src=\"//platform.twitter.com/widgets.js\" charset=\"utf-8\"></script>"
+
 		res.render('twitcom', { 
 			tweets: results,
-			user: req.user
+			user: req.user,
+			embedded_html: html
 		});
 	});
 });
@@ -341,6 +379,9 @@ app.get('/refresh', function(req, res) {
 			var tweet = results[i];
 			tweet.rank = i + 1;
 		}
-		res.render('_tweet_list', { tweets: results });
+		res.render('_tweet_list', { 
+			tweets: results,
+		});
+		// res.send(results);
 	});
 });
