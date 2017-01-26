@@ -10,7 +10,7 @@ a:link, a:hover, a:visited {
 .left_col {
 	float: left;
 	display: table-cell;
-	width: 420px;
+	width: 400px;
 
 }
 
@@ -98,10 +98,9 @@ button:hover {
 }
 
 .tweet_list {
-	display: inline;
-	text-align: center;
-	float: left;
-	max-width: 400px;
+	/*display: inline;*/
+	/*text-align: center;*/
+	/*float: left;*/
 	width: 400px;
 }
 
@@ -137,6 +136,7 @@ button:hover {
 	background-color: #fdfdfd;
 	width: 400px;
 	height: auto;
+	margin: 0 0 0 15px;
 	padding: 5px;
 }
 

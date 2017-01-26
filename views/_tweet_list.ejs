@@ -1,7 +1,12 @@
 <!-- views/_tweet_list.ejs -->
 <article class="tweet_list">
 	<% if(tweets.length == 0) {%>
-		<h1>no tweets</h1>
+		<% var tweet = {
+			rank: "X",
+			body: "",
+			id: 0
+		} %>
+		<%- include('_tweet', { tweet: tweet }) %>
 	<% } %>
 	<% for (var i = 0; i < tweets.length; i++) { %>
 		<%- include('_tweet', { tweet: tweets[i] }) %>
