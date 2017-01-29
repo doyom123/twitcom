@@ -11,9 +11,25 @@
 				<%= tweet.body %>
 			</div>
 			<div class="tweet-two">
-				@<%= tweet.user %> &emsp; <%= tweet.vote_count %>
-				<button class="vote_button" name="vote_button" id="<%= tweet.id %>">▲</button>
-				<button class="neg_button" name="neg_button" id="<%= tweet.id %>">▼</button>
+				<span class="tweet-user">
+					@<%= tweet.user %>
+				</span>
+				 &emsp; 
+
+				<span class="tweet-vote-count">
+					<%= tweet.vote_count %>
+				</span>
+				<% if(login) { %>
+					<button class="vote_button" name="vote_button" id="<%= tweet.id %>">&#10004;</button>
+				<% } %>
+				<% if(tweet.voted) {%>
+					<script type='text/javascript'>
+					console.log("tweet.voted");
+					$(".vote_button").css("background-color","#ED5780");
+					</script>
+				<% } %>
+
+				<!-- <button class="neg_button" name="neg_button" id="<%= tweet.id %>">▼</button> -->
 			</div>
 		</span>
 	</div>

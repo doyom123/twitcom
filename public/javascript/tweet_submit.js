@@ -45,10 +45,21 @@ $(function() {
 
 	// timer
 	function showTime() {
-		var now = moment.tz("Europe/Dublin").format("LTS");
-		$('#timer').html(now);
-		var now2 = new Date().toString();
-		$('#timer2').html(now2);
+		var now = moment();
+		var next_hour = moment().add(1, 'h').startOf('hour');
+		var duration = moment.duration(next_hour.diff(now));
+		var sec = duration.as('seconds').toFixed(2);
+		var min = duration.as('minutes').toFixed(0);
+		var s = (sec % 60).toFixed(0);
+		if(min < 10) {
+			min = '0' + min;
+		}
+		if(s < 10) {
+			s = '0' + s;
+		}
+
+		$('#timer_min').html(min);
+		$('#timer_sec').html(s);
 	}
 
 	var timer = setInterval(showTime, 500);

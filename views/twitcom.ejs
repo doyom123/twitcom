@@ -22,9 +22,9 @@
 					<button id="submit_button">Submit</button>
 					<span class="order">
 					<button id="refresh_button">&#8635;</button>
-					<button id="votes_button" onclick="window.location.href='/'">Votes</button>
+					<!-- <button id="votes_button" onclick="window.location.href='/'">Votes</button>
 					<button id="latest_button" onclick="window.location.href='/latest'">Latest</button>
-					<button id="random_buttom" onclick="window.location.href='/random'">Random</button>
+					<button id="random_buttom" onclick="window.location.href='/random'">Random</button> -->
 					</span>
 				</div>
 
@@ -51,10 +51,11 @@
 
 			<span class="right_col">
 				<div class="right_timer">
-					Next tweet in:
-					<span class="highlight">
-						<div id="timer"></div>
-					</span>
+					Next tweet in:<br>
+					<span id="timer_min"></span>
+					<span id="min">min</span>
+					<span id="timer_sec"></span>
+					<span id="sec">sec</span>
 				</div>
 				<div>
 					<p>

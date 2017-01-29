@@ -11,24 +11,46 @@ $(function() {
 	}
 
 	$('body').on('click', '.vote_button', function() {
-		console.log("vote_button clicked");
 		var id = $(this).attr('id');
+		var el2 = $('#' + id);
+		el2.prop("disabled", true);
+
 		var url = "/vote/"+id;
+		var color = el2.css('background-color');
+		if(color == 'rgb(238, 238, 238)' || color == 'rgb(253, 253, 253)') {
+			var text = el2.prev().text();
+			var newText = parseInt(text) + 1;
+			el2.prev().text(newText.toString());
+			el2.css({
+				backgroundColor: '#ED5780'
+			});
+		} else {
+			var text = el2.prev().text();
+			var newText = parseInt(text) - 1;
+			el2.prev().text(newText.toString());
+			el2.css({
+				backgroundColor: '#fdfdfd'
+			});
+		}
 		var success = function() {
 			console.log("VOTE SUCCESS");
-			// location.reload();
-			refresh();
+			el2.prop("disabled", false);
+
+		}
+		var error = function() {
+			console.log("VOTE ERROR");
 		}
 		$.post(url, success);
 		
 	});
 
-	$('.neg_button').on('click', function() {
+	$('body').on('click', '.neg_button', function() {
+		console.log("neg_button_clicked");
 		var id = $(this).attr('id');
-		var url = "vote/"+id;
+		var url = "/vote_neg/"+id;
 		var success = function() {
 			console.log("NEG SUCCESS");
-			// location.reload();
+			refresh();
 		}
 		$.post(url, success);
 	});

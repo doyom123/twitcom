@@ -8,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var path = require('path');
 var cheerio = require('cheerio');
 var authUser = require('./middleware/authUser.js');
+var auth_user = require('./middleware/auth_user.js');
 var Oauth = require('oauth').OAuth;
 var Twitter = require('twitter');
 var CronJob = require('cron').CronJob;
@@ -36,30 +37,16 @@ var port = process.env.PORT || 8080;
 var times = {
 };
 var init_times = function() {
-	// times.UTCstartTime = moment().second(0);
-	// times.UTCendTime = moment().second(59);
-	times.UTCstartTime = moment().minute(0).second(0);
-	times.UTCendTime = moment().minute(59).second(59);
+	times.UTCstartTime = moment().utc().minute(0).second(0);
+	times.UTCendTime = moment().utc().minute(59).second(59);
 	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
 	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
-	times.startTime = moment.tz("US/Eastern").minute(0).second(0);
-	times.endTime = times.startTime.clone().minute(59).second(59);
-	// times.startTime = moment.tz("America/New_York").second(0);
-	// times.endTime = times.startTime.clone().second(59);
-	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
-	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
 }
 var reset_times = function() {
 	times.UTCstartTime.add(1, 'hours');
 	times.UTCendTime = times.UTCstartTime.clone().minute(59).second(59);
-	// times.UTCendTime = times.UTCstartTime.clone().second(59);
 	times.UTCstartTime_format = times.UTCstartTime.format("YYYY-MM-DD HH:mm:ss");
 	times.UTCendTime_format = times.UTCendTime.format("YYYY-MM-DD HH:mm:ss");
-	times.startTime.add(1, 'hours');
-	times.endTime = times.startTime.clone().minute(59).second(59);
-	// times.endTime = times.startTime.clone().second(59);
-	times.startTime_format = times.startTime.format("YYYY-MM-DD HH:mm:ss");
-	times.endTime_format = times.endTime.format("YYYY-MM-DD HH:mm:ss");
 }
 
 
@@ -71,9 +58,6 @@ var job = new CronJob({
 		var query = 'SELECT * FROM 	 Tweets WHERE submitted_at >= ? AND submitted_at <= ? ' + 
 							  'ORDER BY vote_count DESC LIMIT 1';
 		var now = moment.tz("America/New_York").format("YYYY-MM-DD HH:mm:ss");
-		console.log("nowTime = " + now);
-		console.log("startTime = " + times.startTime_format);
-		console.log("endTime = " + times.endTime_format + '\n');
 		connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 			if(err) {
 				console.log(err);
@@ -87,7 +71,6 @@ var job = new CronJob({
 			  if(error){
 			    console.log(error);
 			  }
-		  	  console.log("tweet: " + tweet);  // Tweet body
 		  	  var _tweet_id_str = tweet.id_str;
 		  	  var query = 'INSERT INTO Top_Tweets(id, tweet_id_str) VALUES(?,?)';
 		  	  connection.query(query, [results[0].id, _tweet_id_str], function(err, results) {
@@ -98,7 +81,6 @@ var job = new CronJob({
 			});
 		});
 		var d = new Date();
-		console.log("Date: " + d.toString());
 		reset_times();		
 	},
 	start: true,
@@ -165,7 +147,6 @@ passport.use(new Strategy({
 					var token = token;
 					console.log(profile._json.id_str);
 					connection.query(query, [twitter_id, name, display_name], function(err, results) {
-						console.log("Inserted ID: " + twitter_id + " name: " + name);
 						if(err) {
 							console.log(err);
 						}
@@ -179,7 +160,6 @@ passport.use(new Strategy({
 						return  cb(null, profile);
 					});
 				} else {
-					console.log("User already exists in database");
 					return cb(null, profile);
 				}
 			});
@@ -198,7 +178,6 @@ var options = {
 var sessionStore = new MySQLStore({}, connection);
 
 passport.serializeUser(function(user, done) {
-	console.log("Serialize User " + user.id + " username: " + user.username);
 	done(null, user.id);
 });
 passport.deserializeUser(function(id, done) {
@@ -208,9 +187,6 @@ passport.deserializeUser(function(id, done) {
 			console.log(err);
 			throw err;
 		}
-		console.log(id);
-		console.log("DESERIALIZE");
-		console.log(results[0].vote_power);
 		done(null, results[0]);
 	});
 	
@@ -222,12 +198,10 @@ app.get('/login/twitter/callback',
 	passport.authenticate('twitter', { failureRedirect: '/latest'}),
 	function(req, res) {
 		res.redirect('/');
-		console.log(req.user.id);
 	});
 
 app.get('/logout/twitter', function(req, res) {
 	req.logout();
-	console.log('user logged out');
 	res.redirect('/');
 });
 
@@ -239,7 +213,6 @@ app.get('/profile', authUser, function(req, res) {
 		if(err) {
 			console.log(err);
 		};
-		console.log(results);
 
 		res.render('profile', {
 			user : req.user,
@@ -248,26 +221,46 @@ app.get('/profile', authUser, function(req, res) {
 	})	
 });
 
+function setVoteList(value, list) {
+	for(var i = 0; i < value.length; i++) {
+		list[i] = value[i].tweet_id;
+	}
+}
 
 app.get('/', authUser, function(req, res) {
-
-
+	var vote_list = [];
+	var user_id = null;
+	if(res.locals.login) {
+		user_id = req.user.id;
+	}
+	var query = 'SELECT * FROM Tweet_Votes WHERE submitted_at >= ? AND submitted_at <= ? AND user_id = ?';
+	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format, user_id], function(err, results) {
+		setVoteList(results, vote_list);
+	});
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
 				'ORDER BY vote_count DESC';
 	
+	// console.log("START TIME: " + times.UTCstartTime_format);
+	// console.log("  END TIME: " + times.UTCendTime_format);
 	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
 		if(err) {
-			console.log("** / route error **")
 			console.log(err);
 		}
 		if(req.user) {
-			console.log(req.user.profile_image_url);
+
 		} else {
 			console.log("USER NOT LOGGED IN");
 		}
+		console.log(vote_list);
 		for(var i = 0; i < results.length; i++) {
 			var tweet = results[i];
 			tweet.rank = i + 1;
+			var index = vote_list.indexOf(tweet.id);
+			if(index > -1) {
+				tweet.voted = true;
+			} else {
+				tweet.voted = false;
+			}
 		}
 		// Get latest tweet
 		var params = {
@@ -286,7 +279,6 @@ app.get('/', authUser, function(req, res) {
 				url: latest_tweet_url
 			}
 			twitter.get('statuses/oembed', params, function(err, tweet, response) {
-				console.log(tweet.html);
 				res.render('twitcom', { 
 					tweets: results,
 					user: req.user,
@@ -341,14 +333,13 @@ app.get('/random', authUser, function(req, res) {
 });
 
 app.post('/tweets/submit', function(req, res) {
-	var query = 'INSERT INTO Tweets(body, user, user_id, submitted_at) VALUES(?,?,?,?)';
+	var query = 'INSERT INTO Tweets(body, user, user_id) VALUES(?,?,?)';
 	var body = req.body.body;
 	var user = req.user.display_name;
 	var user_id = req.user.id;
 	var submitted_at = moment();
 	var submitted_at_format = submitted_at.format("YYYY-MM-DD HH:mm:ss")
-	console.log("submitted_at: " + submitted_at_format);
-	connection.query(query, [body, user, user_id, submitted_at_format], function(err, results) {
+	connection.query(query, [body, user, user_id], function(err, results) {
 		if(err) {
 			console.log(err);
 		}
@@ -358,7 +349,49 @@ app.post('/tweets/submit', function(req, res) {
 
 app.post('/vote/:id([0-9]+)', function(req, res) {
 	var id = req.params.id;
-	var query = 'UPDATE Tweets SET vote_count = vote_count + 1 WHERE id = ?';
+	var user_id = req.user.id;
+	// Check if already voted
+	var query = 'SELECT * FROM Tweet_Votes WHERE tweet_id = ? AND user_id = ?';
+	connection.query(query, [id, user_id], function(err, results) {
+		if(err) {
+			console.log(err);
+		} 
+		if(results.length == 0) {
+			var query = 'UPDATE Tweets SET vote_count = vote_count + 1 WHERE id = ?';
+			connection.query(query, [id], function(err, results) {
+				if(err) {
+					console.log(err);
+				}
+			});
+			var query = 'INSERT INTO Tweet_Votes(tweet_id, user_id) VALUES(?,?)';
+			connection.query(query, [id, user_id], function(err, results) {
+				if(err) {
+					console.log(err);
+				}
+				res.redirect('/');
+			});
+		} else {
+			var query = 'UPDATE Tweets SET vote_count = vote_count - 1 WHERE id = ?';
+			connection.query(query, [id], function(err, results) {
+				if(err) {
+					console.log(err);
+				}
+			});
+			var query = 'DELETE FROM Tweet_Votes WHERE tweet_id = ? AND user_id = ?';
+			connection.query(query, [id, user_id], function(err, resultss) {
+				if(err) {
+					console.log(err);
+				}
+				res.redirect('/');
+			});
+		}
+
+	});
+});
+
+app.post('/vote_neg/:id([0-9]+)', function(req, res) {
+	var id = req.params.id;
+	var query = 'UPDATE Tweets SET vote_count = vote_count - 1 WHERE id = ?';
 	connection.query(query, [id], function(err, results) {
 		if(err) {
 			console.log(err);
@@ -369,6 +402,15 @@ app.post('/vote/:id([0-9]+)', function(req, res) {
 
 // Send JSON response to populate tweet list for AJAX request
 app.get('/refresh', function(req, res) {
+	var vote_list = [];
+	var user_id = null;
+	if(res.locals.login) {
+		user_id = req.user.id;
+	}
+	var query = 'SELECT * FROM Tweet_Votes WHERE submitted_at >= ? AND submitted_at <= ? AND user_id = ?';
+	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format, user_id], function(err, results) {
+		setVoteList(results, vote_list);
+	});
 	var query = 'SELECT * FROM Tweets WHERE submitted_at >= ? AND submitted_at <= ?' + 
 				'ORDER BY vote_count DESC LIMIT 50';
 	connection.query(query, [times.UTCstartTime_format, times.UTCendTime_format], function(err, results) {
@@ -378,10 +420,16 @@ app.get('/refresh', function(req, res) {
 		for(var i = 0; i < results.length; i++) {
 			var tweet = results[i];
 			tweet.rank = i + 1;
+			var index = vote_list.indexOf(tweet.id);
+			if(index > -1) {
+				tweet.voted = true;
+			} else {
+				tweet.voted = false;
+			}
 		}
-		res.render('_tweet_list', { 
-			tweets: results,
-		});
+		// res.render('_tweet_list', { 
+		// 	tweets: results,
+		// });
 		// res.send(results);
 	});
 });

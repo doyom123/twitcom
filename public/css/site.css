@@ -89,6 +89,10 @@ button:hover {
 	padding: 14px;
 }
 
+#refresh_button {
+	font-size: 20px;
+}
+
 #submit_button {
 	padding: 14px;
 
@@ -188,11 +192,7 @@ button:hover {
 
 
 
-#timer {
-	font-size: 40px;
-	text-align: center;
 
-}
 
 #timer_box {
 	float: left;
@@ -203,7 +203,20 @@ button:hover {
 
 .vote_button, .neg_button {
 	border-style: none;
+	padding: 5px;
+	font-size: 15px;
+	margin: 0 0 0 10px;
+	border-radius: 50%;
+	background-color: #fdfdfd;
+}
+
+.vote_button_voted {
+	border-style: none;
 	padding: 8px;
+	font-size: 20px;
+	margin: 0 0 0 10px;
+	border-radius: 20px;
+	background-color: #ED5780;
 }
 
 /* Tweet Submit Form */
@@ -257,5 +270,21 @@ button:hover {
 	padding: 20px;
 	margin: 100px 0 0 0;
 	background-color: #ED5780;
+	/*background-color: #fdfdfd;*/
 	font-weight: bold;
+	color: #ffffff;
+}
+#timer_min {
+	font-size: 80px;
+	color: #ffffff;
+}
+#timer_sec {
+	font-size: 80px;
+	color: #ffffff;
+}
+#min {
+	font-size: 20px;
+}
+#sec {
+	font-size: 20px;
 }

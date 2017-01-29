@@ -3,8 +3,9 @@
 
 module.exports = function(req, res, next) {
 	res.locals.login = req.isAuthenticated();
-	if(!req.isAuthenticated()) {
+	if(req.user) {
+		next();
+	} else {
 		res.redirect('/');
 	}
-	next();
 };
