@@ -45,21 +45,14 @@ $(function() {
 
 	// timer
 	function showTime() {
-		var now = moment();
-		var next_hour = moment().add(1, 'h').startOf('hour');
-		var duration = moment.duration(next_hour.diff(now));
-		var sec = duration.as('seconds').toFixed(2);
-		var min = duration.as('minutes').toFixed(0);
-		var s = (sec % 60).toFixed(0);
-		if(min < 10) {
-			min = '0' + min;
-		}
-		if(s < 10) {
-			s = '0' + s;
-		}
+		var d = new Date();
+		d.setHours(d.getHours() + 1);
+		d.setMinutes(0)
+		d.setSeconds(0);
+		var timespan = countdown(d);
+		$('#timer_min').html(timespan.minutes);
+		$('#timer_sec').html(timespan.seconds);
 
-		$('#timer_min').html(min);
-		$('#timer_sec').html(s);
 	}
 
 	var timer = setInterval(showTime, 500);
