@@ -52,7 +52,6 @@ $(function() {
 		var timespan = countdown(d);
 		$('#timer_min').html(timespan.minutes);
 		$('#timer_sec').html(timespan.seconds);
-
 	}
 
 	var timer = setInterval(showTime, 500);
