@@ -130,7 +130,7 @@ app.use(session({
 passport.use(new Strategy({
 		consumerKey 	: process.env.CONSUMER_KEY,
 		consumerSecret 	: process.env.CONSUMER_SECRET,
-		callbackURL 	: 'http://127.0.0.1:5000/login/twitter/callback'
+		callbackURL 	: process.env.CALLBACK_URL
 	},
 	function(token, tokenSecret, profile, cb) {
 		process.nextTick(function() {
@@ -265,7 +265,7 @@ app.get('/', authUser, function(req, res) {
 		}
 		// Get latest tweet
 		var params = {
-			user_id: 1594627808,
+			user_id: 820122224631877632,
 			count: 1
 		}
 		twitter.get('statuses/user_timeline',
@@ -275,7 +275,7 @@ app.get('/', authUser, function(req, res) {
 				console.log(err);
 			}
 			var tweet = tweets[0];
-			var latest_tweet_url = 'https://twitter.com/DoOm02551934/status/' + tweet.id_str;
+			var latest_tweet_url = 'https://twitter.com/commietwit/status/' + tweet.id_str;
 			var params = {
 				url: latest_tweet_url
 			}
