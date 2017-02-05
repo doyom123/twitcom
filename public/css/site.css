@@ -264,6 +264,13 @@ button:hover {
 	color: #ffffff;
 	font-size: 12px;
 }
+#login {
+	text-decoration: none;
+	position: relative;
+	top: 40px;
+	left: 20px;
+
+}
 
 /* Right */
 .right_timer {

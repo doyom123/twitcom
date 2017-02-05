@@ -1,5 +1,4 @@
 $(function() {
-
 	// Refresh Tweet List
 	function refresh() {
 		var url = "/refresh";
@@ -28,8 +27,16 @@ $(function() {
 
 		if(text.length != 0) {
 			$.post(url, { body : text }, function() {
-				alert('SUBMITTED');
-				location.reload();
+				swal({
+					title: "Congrats",
+					text: "Suggestion submitted",
+					confirmButtonText: "OK"
+
+				},function(isConfirm) {
+					if(isConfirm) {
+						location.reload();
+					}
+				});
 			});
 		} 
 	});
