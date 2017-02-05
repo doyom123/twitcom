@@ -130,7 +130,8 @@ app.use(session({
 passport.use(new Strategy({
 		consumerKey 	: process.env.CONSUMER_KEY,
 		consumerSecret 	: process.env.CONSUMER_SECRET,
-		callbackURL     : process.env.CALLBACK_URL
+		// callbackURL     : process.env.CALLBACK_URL
+		callbackURL     : 'https://twitcom.herokuapp.com/login/twitter/callback/'
 	},
 	function(token, tokenSecret, profile, cb) {
 		process.nextTick(function() {
