@@ -270,26 +270,26 @@ app.get('/', authUser, function(req, res) {
 			// user_id: 820122224631877632,
 			count: 1
 		}
-		twitter.get('statuses/user_timeline',
-					params, 
-					function(err, tweets, response) {
-			if(err) {
-				console.log(err);
-			}
-			var tweet = tweets[0];
-			console.log(tweet.id_str);
-			var latest_tweet_url = 'https://twitter.com/commietwit/status/' + tweet.id_str;
-			var params = {
-				url: latest_tweet_url
-			}
-			twitter.get('statuses/oembed', params, function(err, tweet, response) {
-				res.render('twitcom', { 
-					tweets: results,
-					user: req.user,
-					embedded_html: tweet.html
-				});
-			});
-		});
+		// twitter.get('statuses/user_timeline',
+		// 			params, 
+		// 			function(err, tweets, response) {
+		// 	if(err) {
+		// 		console.log(err);
+		// 	}
+		// 	var tweet = tweets[0];
+		// 	console.log(tweet.id_str);
+		// 	var latest_tweet_url = 'https://twitter.com/commietwit/status/' + tweet.id_str;
+		// 	var params = {
+		// 		url: latest_tweet_url
+		// 	}
+		// 	twitter.get('statuses/oembed', params, function(err, tweet, response) {
+		// 		res.render('twitcom', { 
+		// 			tweets: results,
+		// 			user: req.user,
+		// 			embedded_html: tweet.html
+		// 		});
+		// 	});
+		// });
 	});
 });
 
